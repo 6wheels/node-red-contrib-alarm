@@ -38,7 +38,7 @@ module.exports = function (RED) {
             }
          */
     node.on("input", function (msg) {
-      node.log(node);
+      node.trace(node);
 
       if (this.configError) {
         return;

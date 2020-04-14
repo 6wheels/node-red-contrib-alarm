@@ -19,8 +19,8 @@ module.exports = function (RED) {
      */
     this._panel &&
       this._panel.registerStateListener(this, function (msg) {
-        node.log("new State");
-        node.log(JSON.stringify(msg, null, 2));
+        node.trace("new State");
+        node.trace(JSON.stringify(msg, null, 2));
 
         node.status({
           fill: node._panel.isAlarm ? "red" : "green",

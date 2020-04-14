@@ -33,7 +33,7 @@ module.exports = function (RED) {
       node._panel &&
         node._panel.sensor(msg, function (triggered) {
           if (triggered) {
-            node.log("triggered:" + triggered);
+            node.warn("triggered:" + triggered);
             if (node.resetTimer) {
               clearTimeout(node.resetTimer);
               node.resetTimer = null;

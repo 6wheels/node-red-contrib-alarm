@@ -14,8 +14,8 @@ module.exports = function (RED) {
     this.alarmNodes = new Set();
 
     node.nodeId = node.id.replace(/\./g, "_");
-    console.log("node id ", node.nodeId);
-    console.log("SecuritySystemCurrentState_" + node.nodeId);
+    node.debug("node id ", node.nodeId);
+    node.debug("SecuritySystemCurrentState_" + node.nodeId);
 
     this.alarmState =
       node.context().global.get("SecuritySystemCurrentState_" + node.nodeId) ||
@@ -109,24 +109,24 @@ module.exports = function (RED) {
      * @param node
      */
     this.deregisterStateListener = function (listenerNode) {
-      node.log("deregister: " + listenerNode.id);
+      node.debug("deregister: " + listenerNode.id);
       delete node.stateListeners[listenerNode.id];
     };
 
     this.notifyChange = function (msg, fromHomekit) {
       if (fromHomekit) {
-        node.log("from homekit");
+        node.debug("from homekit");
         msg.payload.fromHomekit = true;
       } else {
-        node.log("local");
+        node.debug("local");
       }
       // node.log(JSON.stringify(msg,null,2));
       // node.log(JSON.stringify(node.stateListeners,null,2));
 
       async.each(node.stateListeners, function (listener, callback) {
-        console.log("1", JSON.stringify(msg, null, 2));
+        node.trace("1", JSON.stringify(msg, null, 2));
         listener(JSON.parse(JSON.stringify(msg)));
-        console.log("2", JSON.stringify(msg, null, 2));
+        node.trace("2", JSON.stringify(msg, null, 2));
         callback(null);
       });
     };
@@ -142,8 +142,8 @@ module.exports = function (RED) {
       const fromHomekit = (msg.payload && msg.payload.fromHomekit) || false;
 
       // only do something if we have been fed a new security state
-      node.log("setState");
-      node.log(JSON.stringify(msg, null, 2));
+      node.trace("setState");
+      node.trace(JSON.stringify(msg, null, 2));
 
       if (!msg.payload) {
         node.error("invalid payload", msg);
@@ -175,16 +175,16 @@ module.exports = function (RED) {
             })
           );
         }
-        node.log("Alarm: ");
+        node.warn("Alarm triggered");
         newState = 4;
         alarmType = 1;
       }
 
-      node.log(
+      node.debug(
         "newState: " + newState + " = " + targetState + " || " + currentState
       );
-      node.log("localState: " + node.alarmState);
-      node.log(
+      node.debug("localState: " + node.alarmState);
+      node.debug(
         "alarmType: " +
           alarmType +
           " = " +
@@ -238,7 +238,7 @@ module.exports = function (RED) {
       }
 
       node.notifyChange(msg, fromHomekit);
-      console.log("callback", callback);
+      node.debug("callback", callback);
       if (callback) {
         callback({
           label: node.alarmModes[node.alarmState],
